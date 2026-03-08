@@ -1,0 +1,9 @@
+discord.py
+Pillow
+psutil
+requests
+
+# Testing
+pytest
+pytest-asyncio
+pytest-mock

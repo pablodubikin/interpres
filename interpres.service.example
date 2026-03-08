@@ -1,0 +1,21 @@
+# Copy this file to interpres.service and replace /home/YOUR_USER with your
+# actual username, then:
+#   systemctl --user enable interpres.service
+#   systemctl --user start interpres.service
+
+[Unit]
+Description=Interpres Discord Bot
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/YOUR_USER/projects/interpres
+ExecStart=/home/YOUR_USER/projects/interpres/venv/bin/python3 /home/YOUR_USER/projects/interpres/bot.py
+Restart=on-failure
+RestartSec=10
+EnvironmentFile=/home/YOUR_USER/projects/interpres/.env
+Environment=PATH=/home/YOUR_USER/.local/bin:/usr/local/bin:/usr/bin:/bin
+Environment=DISPLAY=:1
+
+[Install]
+WantedBy=default.target
