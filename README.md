@@ -16,6 +16,29 @@ A Discord bot that bridges [Claude Code](https://claude.ai/claude-code) and Disc
 - [`claude` CLI](https://claude.ai/claude-code) installed and authenticated
 - A Discord bot token
 
+## Discord Bot Setup
+
+**1. Create a Discord application:**
+
+Go to [discord.com/developers/applications](https://discord.com/developers/applications), click **New Application**, and give it a name.
+
+**2. Create a bot user:**
+
+Under **Bot**, click **Add Bot**. Copy the token — this is your `DISCORD_TOKEN`.
+
+**3. Enable privileged intents:**
+
+Still under **Bot**, scroll to **Privileged Gateway Intents** and enable:
+- **Message Content Intent** ← required, the bot cannot read messages without this
+
+**4. Invite the bot to your server:**
+
+Under **OAuth2 → URL Generator**, select:
+- Scopes: `bot`, `applications.commands`
+- Bot permissions: `Send Messages`, `Read Message History`, `Manage Channels`, `Attach Files`
+
+Open the generated URL and invite the bot to your server.
+
 ## Setup
 
 **1. Clone and install dependencies:**
