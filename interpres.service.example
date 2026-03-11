@@ -1,4 +1,4 @@
-# Copy this file to interpres.service and replace /home/YOUR_USER with your
+# Copy this file to interpres.service and replace YOUR_USERNAME with your
 # actual username, then:
 #   systemctl --user enable interpres.service
 #   systemctl --user start interpres.service
@@ -9,12 +9,12 @@ After=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=/home/YOUR_USER/projects/interpres
-ExecStart=/home/YOUR_USER/projects/interpres/venv/bin/python3 /home/YOUR_USER/projects/interpres/bot.py
+WorkingDirectory=/home/YOUR_USERNAME/projects/interpres
+ExecStart=/home/YOUR_USERNAME/projects/interpres/venv/bin/python3 /home/YOUR_USERNAME/projects/interpres/bot.py
 Restart=on-failure
 RestartSec=10
-EnvironmentFile=/home/YOUR_USER/projects/interpres/.env
-Environment=PATH=/home/YOUR_USER/.local/bin:/usr/local/bin:/usr/bin:/bin
+EnvironmentFile=/home/YOUR_USERNAME/projects/interpres/.env
+Environment=PATH=/home/YOUR_USERNAME/.local/bin:/usr/local/bin:/usr/bin:/bin
 Environment=DISPLAY=:1
 
 [Install]

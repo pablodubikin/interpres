@@ -17,13 +17,19 @@ class ProjectResolver:
         return channel.topic
     
     @staticmethod
-    def get_full_project_path(channel) -> Optional[str]:
-        """Get full absolute path to project directory, guarded against path traversal."""
+    def get_full_project_path(channel, base_dir: str = None) -> Optional[str]:
+        """Get full absolute path to project directory, guarded against path traversal.
+
+        Args:
+            channel: The Discord channel or thread.
+            base_dir: The base directory to resolve against. Defaults to Config.BASE_DIR.
+        """
+        effective_base = base_dir or Config.BASE_DIR
         relative_path = ProjectResolver.get_project_path(channel)
         if not relative_path:
             return None
-        resolved = os.path.realpath(os.path.join(Config.BASE_DIR, relative_path))
-        base_real = os.path.realpath(Config.BASE_DIR)
+        resolved = os.path.realpath(os.path.join(effective_base, relative_path))
+        base_real = os.path.realpath(effective_base)
         if not resolved.startswith(base_real + os.sep) and resolved != base_real:
             return None
         return resolved

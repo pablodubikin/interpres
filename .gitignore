@@ -29,3 +29,4 @@ bot.log
 CLAUDE_STATUS.txt
 
 ai-dev-bot.service
+interpres.service

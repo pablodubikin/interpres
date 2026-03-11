@@ -37,10 +37,13 @@ class DiscordBot:
         async def on_message(message):
             if message.author == self.client.user:
                 return
-            
+
             if not message.content.strip() and not message.attachments:
                 return
-            
+
+            if not self._is_message_allowed(message):
+                return
+
             if message.content.startswith("/metabot "):
                 command = message.content[len("/metabot "):].strip()
                 logger.info(f"Metabot command from {message.author}: {command}")
@@ -61,17 +64,39 @@ class DiscordBot:
             logger.info(f"Prompt from {message.author} in #{message.channel}: {message.content[:100]}")
             await self._handle_prompt(message)
     
-    def _get_project_dirs(self):
-        """Return sorted list of non-hidden directory names in BASE_DIR."""
+    def _is_message_allowed(self, message: discord.Message) -> bool:
+        """Return True if the message comes from a guild and channel the bot is configured for."""
+        if not message.guild:
+            return False
+        guild_base_dir = Config.get_guild_base_dir(message.guild.id)
+        if guild_base_dir is None:
+            return False
+        allowed_channel_id = Config.get_guild_channel_id(message.guild.id)
+        if allowed_channel_id is not None:
+            channel = message.channel
+            if isinstance(channel, discord.Thread):
+                channel = channel.parent
+            if channel.id != allowed_channel_id:
+                return False
+        return True
+
+    def _get_guild_base_dir(self, message: discord.Message) -> str:
+        """Return the base directory for the guild, falling back to Config.BASE_DIR."""
+        return Config.get_guild_base_dir(message.guild.id) or Config.BASE_DIR
+
+    def _get_project_dirs(self, base_dir: str = None):
+        """Return sorted list of non-hidden directory names in base_dir."""
+        base_dir = base_dir or Config.BASE_DIR
         return sorted(
-            entry for entry in os.listdir(Config.BASE_DIR)
-            if os.path.isdir(os.path.join(Config.BASE_DIR, entry))
+            entry for entry in os.listdir(base_dir)
+            if os.path.isdir(os.path.join(base_dir, entry))
             and not entry.startswith(".")
         )
-    
+
     async def _handle_list_projects(self, message: discord.Message):
         """List all available projects."""
-        projects = self._get_project_dirs()
+        base_dir = self._get_guild_base_dir(message)
+        projects = self._get_project_dirs(base_dir)
         if not projects:
             await message.channel.send("No projects found.")
             return
@@ -80,11 +105,12 @@ class DiscordBot:
             f"📁 **Available projects** ({len(projects)}):\n{listing}\n\n"
             f"Use `/channel <name>` to create a channel for one."
         )
-    
+
     async def _handle_create_channel(self, message: discord.Message, project_name: str):
         """Create a project channel on demand."""
-        project_path = os.path.realpath(os.path.join(Config.BASE_DIR, project_name))
-        base_real = os.path.realpath(Config.BASE_DIR)
+        base_dir = self._get_guild_base_dir(message)
+        project_path = os.path.realpath(os.path.join(base_dir, project_name))
+        base_real = os.path.realpath(base_dir)
         if not project_path.startswith(base_real + os.sep) and project_path != base_real:
             await message.channel.send("⚠️ Invalid project name.")
             return
@@ -109,10 +135,10 @@ class DiscordBot:
         """Handle regular prompt messages."""
         prompt = message.content.strip()
 
-        project_root = ProjectResolver.get_full_project_path(message.channel)
+        guild_base_dir = self._get_guild_base_dir(message)
+        project_root = ProjectResolver.get_full_project_path(message.channel, guild_base_dir)
         if not project_root:
-            # Use the base projects directory as default for general channel
-            project_root = Config.BASE_DIR
+            project_root = guild_base_dir
 
         saved_paths = []
         if message.attachments:
