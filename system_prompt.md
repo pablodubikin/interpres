@@ -50,3 +50,22 @@ The search term is matched case-insensitively against window titles and class na
 - `sublime` → captures Sublime Text
 
 If no match is found, the script will print a list of available windows to help pick the right term.
+
+## Handling video attachments
+
+When the user attaches a video file (.mov, .mp4, .avi, etc.), you CANNOT read it directly with the Read tool. Instead, extract frames using OpenCV:
+
+```python
+import cv2
+cap = cv2.VideoCapture('/tmp/claude_attachments/video.mov')
+total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+fps = cap.get(cv2.CAP_PROP_FPS)
+# Extract frames at key moments
+for i, frame_num in enumerate([0, 30, 60, 90, 120]):
+    cap.set(cv2.CAP_PROP_POS_FRAMES, frame_num)
+    ret, frame = cap.read()
+    if ret:
+        cv2.imwrite(f'/tmp/video_frame_{i}.png', frame)
+```
+
+Then use the Read tool on the extracted `.png` files to view them visually. OpenCV (cv2) is available on this system.
