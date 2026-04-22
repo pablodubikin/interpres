@@ -8,6 +8,7 @@ from handlers.claude_agent import ClaudeAgent
 @pytest.fixture()
 def agent():
     session_manager = MagicMock()
+    session_manager.get_session.return_value = (None, None)
     return ClaudeAgent(session_manager)
 
 
