@@ -65,11 +65,16 @@ class ClaudeAgent:
         if session_id:
             cmd += ["--resume", session_id]
         
+        # Use the parent projects directory as cwd (not the project git repo root).
+        # Claude Code only loads global MCP servers when the cwd is outside any git repo;
+        # running from inside a git repo causes it to use project-scoped settings only.
+        # The project is still accessible via --add-dir above.
+        base_dir = os.path.dirname(project_root.rstrip("/"))
         proc = await asyncio.create_subprocess_exec(
             *cmd,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
-            cwd=project_root,
+            cwd=base_dir,
         )
         stdout_bytes, stderr_bytes = await proc.communicate()
         stdout = stdout_bytes.decode() if stdout_bytes else ""
