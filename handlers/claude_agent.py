@@ -82,6 +82,7 @@ class ClaudeAgent:
             with open(SYSTEM_PROMPT_PATH) as f:
                 system_prompt = f.read()
             system_prompt = system_prompt.replace("{{THREAD_ID}}", str(thread_id))
+            system_prompt = system_prompt.replace("{{PROJECT_ROOT}}", project_root)
 
         stdout, stderr = await self._run_claude(prompt, project_root, resume_cwd, session_id, system_prompt)
 
