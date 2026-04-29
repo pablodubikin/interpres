@@ -32,6 +32,9 @@ class DiscordBot:
         @self.client.event
         async def on_ready():
             logger.info(f"Bot started - logged in as {self.client.user}")
+            channel = self.client.get_channel(1434648080338128898)
+            if channel:
+                await channel.send("hey, I was down but I'm back up now 👋")
         
         @self.client.event
         async def on_message(message):
