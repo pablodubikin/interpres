@@ -38,6 +38,7 @@ class Config:
             return None
         channel_id = entry.get("channel_id")
         return int(channel_id) if channel_id is not None else None
+    STARTUP_ANNOUNCE_CHANNEL_ID: int | None = int(os.getenv("STARTUP_ANNOUNCE_CHANNEL_ID")) if os.getenv("STARTUP_ANNOUNCE_CHANNEL_ID") else None
     LOG_FILE = "bot.log"  # File to write bot logs
     PID_FILE = "bot.pid"  # File to store bot process ID
     DISCORD_MAX_MESSAGE_LENGTH = 1900  # Discord message limit with buffer
